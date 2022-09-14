@@ -67,18 +67,16 @@ const Sidebar = ({computer}) => {
                     </div>
                 </>)}
                 <div className="absolute bottom-10 left-5 border text-green-500 bg-white p-3 rounded-full drop-shadow-xl">
-                    <NavLink to="connexion" onClick={() => {
+                    <BiLogOut className="cursor-pointer" size={30} onClick={() => {
                         setActiveMenu(false);
                         setIsAuth(false);
-                    }}>
-                        <BiLogOut size={30} />
-                    </NavLink>
+                    }} />
                 </div>
             </div>
         )
     else
         return (
-            <div className="fixed top-4 left-6 z-50 bg-white rounded-full">
+            <div className="fixed top-4 left-6 z-50 bg-white rounded-full drop-shadow-xl">
                 <div className="text-cyan-800 w-14 h-14 flex items-center justify-center bg-blue-300 rounded-full">
                     <BiMenuAltLeft size={35} className="cursor-pointer" onClick={() => setShowMenu(!showMenu)} />
                 </div>
@@ -96,6 +94,12 @@ const Sidebar = ({computer}) => {
                                 </NavLink>
                             </div>
                         ))}
+                        <div className=" text-green-500 bg-white p-3 rounded-full ">
+                            <BiLogOut size={30} onClick={() => {
+                                setActiveMenu(false);
+                                setIsAuth(false);
+                            }} />
+                        </div>
                     </div>
                 ) : (<> </>)}
             </div>
