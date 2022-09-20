@@ -28,25 +28,17 @@ const Document = ({date, data}) => {
                             }}/>
             </div>
             <div className="overflow-x-scroll md:overflow-hidden flex md:flex-wrap ml-10 mt-4 mb-0">
-                {Array.isArray(data) ? data.filter((item, index) => (index >= (page - 1) * 8 && index < page * 8)).map((item) => (
-                    <div key={item._id}
+                {data.filter((item, index) => (index >= (page - 1) * 8 && index < page * 8)).map(({date, data}, index) => (
+                    <div key={index}
                          className="relative p-3 rounded md:rounded-none md:p-0 md:w-48 md:h-28 mr-10 mb-4 border border-blue-200">
-                        <div onClick={() => openInNewTab(item.filepath)}
+                        <div onClick={() => openInNewTab(data.filepath)}
                                 className="cursor-pointer h-20 flex flex-col items-center justify-center">
                             <AiOutlineFilePdf size={45} color="red" />
                             <div>{(data.size / 1000).toFixed(2)} Ko</div>
                         </div>
-                            <div className=" absolute left-0  bottom-0 text-center w-full bg-gray-300 text-ellipsis text-sm" >{item.date}</div>
+                            <div className=" absolute left-0  bottom-0 text-center w-full bg-gray-300 text-ellipsis text-sm" >{data.date}</div>
                     </div>
-                )) : <div className="relative p-3 rounded md:rounded-none md:p-0 md:w-48 md:h-28 mr-10 mb-4 border border-blue-200">
-                        <div onClick={() => openInNewTab(data.filepath)}
-                             className="cursor-pointer h-20 mt-1 flex flex-col items-center justify-center">
-                            <AiOutlineFilePdf size={45} color="red" />
-                            <div>{(data.size / 1000).toFixed(2)} Ko</div>
-                        </div>
-                        <div className=" absolute left-0  bottom-0 text-center w-full bg-gray-300 text-ellipsis text-sm" >{data.date}</div>
-                    </div>
-                }
+                ))}
 
             </div>
             {data.length > 8 ? <div className="w-full flex items-center justify-center">

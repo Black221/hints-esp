@@ -55,7 +55,6 @@ const Home = () => {
                 }
             }
         ).then(res => {
-            console.log(res.data)
             setMatiereToRender(res.data.matiere)
         }).catch((error) => {
             console.log(error)
@@ -89,13 +88,17 @@ const Home = () => {
                     tmp[k].map(v => ({date: k, data: v}))
                 );
             })
-            setDocuments(result[0]);
+
+            result.sort((a,b) => {
+                return b[0].date - a[0].date
+            })
+            setDocuments(result);
         }
     }, [matiereToRender]);
 
     useEffect(() => {
         if (documents)
-        console.log(documents)
+            console.log(documents)
     }, [documents]);
 
 
@@ -119,8 +122,8 @@ const Home = () => {
                 </div>
                 <h1 className="text-2xl text-center font-bold text-blue-500">{matiereToRender && matiereToRender.name}</h1>
                 <div className="mt-7">
-                    {documents ? documents.map(({date, data}, index) => (
-                        <Document key={index} date={date} data={data} />
+                    {documents ? documents.map((doc, index) => (
+                        <Document key={index} date={doc[0].date} data={doc} />
                     )) : <div className="flex flex-col items-center justify-center">
                         <img src={fileLoad} alt=""/>
                         Aucun fichier trouvé.
