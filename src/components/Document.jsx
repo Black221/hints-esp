@@ -30,9 +30,9 @@ const Document = ({date, data}) => {
             <div className="overflow-x-scroll md:overflow-hidden flex md:flex-wrap ml-10 mt-4 mb-0">
                 {data.filter((item, index) => (index >= (page - 1) * 8 && index < page * 8)).map(({date, data}, index) => (
                     <div key={index}
-                         className="relative p-3 rounded md:rounded-none md:p-0 md:w-48 md:h-28 mr-10 mb-4 border border-blue-200">
+                         className="relative py-3 rounded md:rounded-none md:p-0  w-24 md:w-48 md:h-28 mr-4 md:mr-10 mb-4 border border-blue-200">
                         <div onClick={() => openInNewTab(data.filepath)}
-                                className="cursor-pointer h-20 flex flex-col items-center justify-center">
+                                className="cursor-pointer w-24 md:w-auto h-20 flex flex-col items-center justify-center">
                             <AiOutlineFilePdf size={45} color="red" />
                             <div>{(data.size / 1000).toFixed(2)} Ko</div>
                         </div>
