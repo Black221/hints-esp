@@ -12,7 +12,7 @@ import Dashboard from "./admin/Dashboard";
 import {useAuthContext} from "./context/AuthProvider";
 import {RequireAuth} from "./guard/AuthGard";
 import axios from "axios";
-import {HOST} from "./data/host";
+import {HOST, PORT} from "./config/host";
 
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
 
     const fetchUser = () => {
         axios.get(
-            `http://${HOST}:4200/api/user/get/${auth.user.userId}`,
+            `http://${HOST}:${PORT}/api/user/get/${auth.user.userId}`,
             {
                 headers: {
                     Authorization : `Bearer ${auth.user.token}`

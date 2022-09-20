@@ -6,7 +6,7 @@ import axios from "axios";
 import {useAuthContext} from "../context/AuthProvider";
 import {useStateContext} from "../context/ContextProvider";
 import fileLoad from "../assets/fileLoad.png"
-import {HOST} from "../data/host";
+import {HOST, PORT} from "../config/host";
 import Moment from 'moment';
 
 
@@ -26,7 +26,7 @@ const Home = () => {
 
     const fetchMatieres = () => {
         axios.get(
-            `http://${HOST}:4200/api/department/get/${userInfo.department}`,
+            `http://${HOST}:${PORT}/api/department/get/${userInfo.department}`,
             {
                 headers: {
                     Authorization : `Bearer ${auth.user.token}`

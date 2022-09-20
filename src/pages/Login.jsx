@@ -8,7 +8,7 @@ import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useAuthContext} from "../context/AuthProvider";
 import {useStateContext} from "../context/ContextProvider";
-import {HOST} from "../data/host";
+import {HOST, PORT} from "../config/host";
 
 const Login = () => {
 
@@ -29,7 +29,7 @@ const Login = () => {
         setResponse({data : 'connexion en cours'})
         setIsLoading(true)
         e.preventDefault();
-        axios.post(`http://${HOST}:4200/api/user/login`, {
+        axios.post(`http://${HOST}:${PORT}/api/user/login`, {
             email,
             password
         }).then(res => {
