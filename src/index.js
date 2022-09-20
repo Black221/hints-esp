@@ -3,12 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import {ContextProvider} from "./context/ContextProvider";
+import {AuthProvider} from "./context/AuthProvider";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <ContextProvider>
-        <App />
-    </ContextProvider>
+    <AuthProvider>
+        <ContextProvider>
+            <App />
+        </ContextProvider>
+    </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

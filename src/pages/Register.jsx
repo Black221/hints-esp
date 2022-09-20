@@ -6,18 +6,23 @@ import {RiLock2Line} from "react-icons/ri";
 import {Link, useNavigate} from "react-router-dom";
 import {useStateContext} from "../context/ContextProvider";
 import {FaRegUser} from "react-icons/fa";
+import {useAuthContext} from "../context/AuthProvider";
 
 const Register = () => {
 
     let navigate = useNavigate();
-    const {
-        isAuth
-    } = useStateContext();
+    const auth = useAuthContext()
+
+    const handleRegister = (e) => {
+        e.preventDefault();
+        auth.login("bouna");
+        navigate('/accueil');
+    }
 
     useEffect(() => {
-        if (isAuth)
-            navigate("/accueil")
-    }, []);
+        if (auth.user)
+            navigate('/accueil')
+    }, [auth.user])
 
     return (
         <div className="bg-cyan-400 bg-gradient-to-bl from-blue-500 md:from-white md:bg-white h-full md:h-screen md:grid md:grid-cols-2 ">
@@ -34,7 +39,7 @@ const Register = () => {
             <div className="md:relative flex flex-col items-center justify-center" >
                 <img src={cee} alt="" className="md:w-auto w-44"/>
                 <div className="relative bottom-5">
-                    <form action="" className="md:space-y-6 space-y-5 bg-white py-3 rounded-xl md:drop-shadow-none drop-shadow-xl px-2" onSubmit={() => {navigate("option")}}>
+                    <form action="" className="md:space-y-6 space-y-5 bg-white py-3 rounded-xl md:drop-shadow-none drop-shadow-xl px-2" onSubmit={handleRegister}>
                         <div className=" flex justify-between items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
                             <div className="relative">
                                 <input type="text"

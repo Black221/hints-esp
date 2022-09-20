@@ -1,26 +1,56 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import login from "../assets/login.png";
+import loginGif from "../assets/login.gif";
 import cee from "../assets/Vector.png";
 import {FiAtSign} from "react-icons/fi";
 import {RiLock2Line} from "react-icons/ri";
 import {Link, useNavigate} from "react-router-dom";
+import axios from "axios";
+import {useAuthContext} from "../context/AuthProvider";
 import {useStateContext} from "../context/ContextProvider";
+import {HOST} from "../data/host";
 
 const Login = () => {
 
     let navigate = useNavigate();
 
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [response, setResponse] = useState({})
+
     const {
-        activeMenu,
-        setActiveMenu,
-        isAuth,
-        setIsAuth
+        isLoading,
+        setIsLoading,
     } = useStateContext();
 
+    const auth = useAuthContext()
+
+    const handleLogin = async (e) => {
+        setResponse({data : 'connexion en cours'})
+        setIsLoading(true)
+        e.preventDefault();
+        axios.post(`http://${HOST}:4200/api/user/login`, {
+            email,
+            password
+        }).then(res => {
+            localStorage.setItem('access-key', JSON.stringify(res.data));
+            auth.login(res.data);
+        }).catch((error) => {
+            setIsLoading(false)
+            setResponse(error.response);
+        })
+    }
+
     useEffect(() => {
-        if (isAuth)
-            navigate("/accueil")
-    }, []);
+
+       if (auth.user) {
+           setIsLoading(false)
+           navigate("/accueil")
+       }
+
+    }, [auth.user]);
+
+
 
     return (
         <div className="bg-cyan-400 bg-gradient-to-bl from-blue-500 md:from-white md:bg-white h-full md:h-screen md:grid md:grid-cols-2 ">
@@ -37,25 +67,33 @@ const Login = () => {
             <div className="md:relative flex flex-col items-center justify-center" >
                 <img src={cee} alt="" className="md:w-auto w-44"/>
                 <div className="relative bottom-5">
-                    <form action="" className=" bg-white py-3 rounded-xl md:drop-shadow-none drop-shadow-xl" onSubmit={() => {setIsAuth(true);navigate("/accueil")}}>
-                        <div className=" flex justify-between items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
-                            <div className="relative">
+                    <form className=" bg-white py-3 rounded-xl md:drop-shadow-none drop-shadow-xl"
+                          onSubmit={handleLogin}>
+                        <div className="text-center text-red-500">{response.data}</div>
+                        <div className=" flex  items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
+                            <div className="relative flex-1">
                                 <input type="email"
                                        id="email"
-                                       className="flex-1 md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
-                                       placeholder=""/>
+                                       className="w-full md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
+                                       placeholder=""
+                                       value={email}
+                                       onChange={(e) => setEmail(e.target.value)}
+                                />
                                 <label htmlFor="email"
                                        className="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-6 left-1">
                                     Email</label>
                             </div>
                             <FiAtSign size={24} />
                         </div>
-                        <div className="mt-4 relative flex justify-between items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
-                            <div className="relative">
+                        <div className="mt-4 relative flex  items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
+                            <div className="relative flex-1">
                                 <input type="password"
                                        id="password"
-                                       className="flex-1 md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
-                                       placeholder=""/>
+                                       className="w-full md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
+                                       placeholder=""
+                                       value={password}
+                                       onChange={(e) => setPassword(e.target.value)}
+                                />
                                 <label htmlFor="password"
                                        className="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-6 left-1">
                                     Mot de passe</label>
@@ -72,10 +110,14 @@ const Login = () => {
                             <span className=" text-cyan-600 cursor-pointer">Mot de passe oublié</span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <input type="submit"
-                                   value="Se connecter"
-                                   className="cursor-pointer md:mt-10 mt-8 p-2 mx-auto px-16 font-bold text-xl bg-sky-500 text-white rounded-md "/>
-
+                            {!isLoading
+                                ? <input type="submit"
+                                         value="Se connecter"
+                                         className="cursor-pointer md:mt-10 mt-8 p-2 mx-auto px-16 font-bold text-xl bg-sky-500 text-white rounded-md "/>
+                                : <img src={loginGif}
+                                       className="w-24"
+                                       alt=""/>
+                            }
                         </div>
                      </form>
 

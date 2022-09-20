@@ -1,10 +1,102 @@
-import React from "react";
-import {departments} from "../data/dummy";
+import React, {useEffect, useState} from "react";
+import { icons } from "../data/dummy";
 import Document from "../components/Document";
 import vectorGreen from "../assets/Vectordhtr.png";
-import {BsFolderPlus} from "react-icons/bs";
-
+import axios from "axios";
+import {useAuthContext} from "../context/AuthProvider";
+import {useStateContext} from "../context/ContextProvider";
+import fileLoad from "../assets/fileLoad.png"
+import {HOST} from "../data/host";
 const Home = () => {
+
+    const {
+        userInfo,
+        semester,
+    } = useStateContext();
+
+    const [matieres, setMatieres] = useState(null);
+    const [matiereToRender, setMatiereToRender] = useState(null);
+    const [documents, setDocuments] = useState(null)
+
+    const auth = useAuthContext();
+
+
+    const fetchMatieres = () => {
+        axios.get(
+            `http://${HOST}:4200/api/department/get/${userInfo.department}`,
+            {
+                headers: {
+                    Authorization : `Bearer ${auth.user.token}`
+                }
+            }
+        ).then(res => {
+            const department = res.data.department;
+            const formation = department.formations_options.filter((item) => (
+                item.formation._id === userInfo.formation._id
+                && item.option._id === userInfo.option._id
+            ))[0];
+            const year =  formation.years.filter((year) => (
+                year.number === userInfo.year
+            ))[0];
+            setMatieres(year.semesters.filter((item) => (
+                item.number === semester
+            ))[0].matieres);
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    const fetchMatiere = (id) => {
+        axios.get(
+            `http://${HOST}:4200/api/department/matiere/get/${id}`,
+            {
+                headers: {
+                    Authorization : `Bearer ${auth.user.token}`
+                }
+            }
+        ).then(res => {
+            console.log(res.data)
+            setMatiereToRender(res.data.matiere)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    useEffect(() => {
+        if (userInfo)
+            fetchMatieres()
+    }, [userInfo])
+
+    useEffect(() => {
+       if (matieres)
+           fetchMatiere(matieres[0]._id)
+    }, [matieres]);
+
+
+    useEffect(() => {
+
+        if (matiereToRender) {
+            let tmp = matiereToRender.files.reduce((r, o) => {
+                    r[o.date.split('/')[2]] = r[o.date.split('/')[2]] || []
+                    r[o.date.split('/')[2]].push(o)
+                    return r;
+                },
+                Object.create(null)
+            );
+            let result = [];
+            Object.keys(tmp).forEach(k => {
+                result.push(
+                    tmp[k].map(v => ({date: k, data: v}))
+                );
+            })
+            setDocuments(result[0]);
+        }
+    }, [matiereToRender]);
+
+    useEffect(() => {
+        if (documents)
+        console.log(documents)
+    }, [documents]);
 
 
     return (
@@ -17,25 +109,23 @@ const Home = () => {
             <div className="text-start w-full md:px-10">
                 <h1 className="text-2xl font-bold text-gray-700 ml-4">Matières</h1>
                 <div className="overflow-x-scroll border flex p-3 rounded-xl my-4 bg-blue-200 md:bg-blue-100 drop-shadow-md">
-                    { departments
-                        .filter((department) => (department.id === "DGI"))[0]
-                        .level
-                        .filter((level) => (level.title === "DUT 1"))[0]
-                        .options
-                        .filter((option) => (option.id === "Inf"))[0]
-                        .matieres.map((matiere) => (
-                            <div className="cursor-pointer p-4 py-1 rounded-xl border bg-white mr-3 drop-shadow-md flex items-center">
-                                {matiere.icon} <span className="ml-4 text-sm "> {matiere.name}</span>
-                            </div>
-                        ))
-                    }
+                    { matieres && matieres.map((matiere) => (
+                        <div onClick={() => fetchMatiere(matiere._id)}
+                             key={matiere._id}
+                             className="cursor-pointer p-4 py-1 rounded-xl border bg-white mr-3 drop-shadow-md flex items-center">
+                            {icons[`${matiere.icon}`]} <span className="ml-4 text-sm "> {matiere.name}</span>
+                        </div>
+                    ))}
                 </div>
-                <div className="flex items-center justify-center my-6 text-green-500">
-                    <BsFolderPlus size={40} className="cursor-pointer" onClick={() => {}} />
-                </div>
-                <div>
-                    <Document date={2010} data={[{id: 0},{id: 1},{id: 2},{id: 3},{id: 4},{id: 5},{id: 6}, {id: 7},{id: 8}]} />
-                    <Document date={2005} data={[{id: 0},{id: 1},{id: 2},{id: 3}]} />
+                <h1 className="text-2xl text-center font-bold text-blue-500">{matiereToRender && matiereToRender.name}</h1>
+                <div className="mt-7">
+                    {documents ? documents.map(({date, data}, index) => (
+                        <Document key={index} date={date} data={data} />
+                    )) : <div className="flex flex-col items-center justify-center">
+                        <img src={fileLoad} alt=""/>
+                        Aucun fichier trouvé.
+                    </div>}
+
                 </div>
             </div>
         </div>
