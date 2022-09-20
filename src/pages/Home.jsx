@@ -7,6 +7,9 @@ import {useAuthContext} from "../context/AuthProvider";
 import {useStateContext} from "../context/ContextProvider";
 import fileLoad from "../assets/fileLoad.png"
 import {HOST} from "../data/host";
+import Moment from 'moment';
+
+
 const Home = () => {
 
     const {
@@ -107,7 +110,7 @@ const Home = () => {
             <div className="absolute -right-5 md:right-16 w-44 flex flex-col text-white items-center justify-center top-5 bg-semester text-center">
                 <img src={vectorGreen}  alt="" className="absolute drop-shadow-md"/>
                 <div className="relative text-xl font-semibold italic"> Semestre 1</div>
-                <div className="relative "> 5 / 11 / 2022 </div>
+                <div className="relative "> { Moment().format('DD-MM-YYYY')} </div>
             </div>
             <div className="text-start w-full md:px-10">
                 <h1 className="text-2xl font-bold text-gray-700 ml-4">Matières</h1>
@@ -122,7 +125,7 @@ const Home = () => {
                 </div>
                 <h1 className="text-2xl text-center font-bold text-blue-500">{matiereToRender && matiereToRender.name}</h1>
                 <div className="mt-7">
-                    {documents ? documents.map((doc, index) => (
+                    {documents && documents[0] ? documents.map((doc, index) => (
                         <Document key={index} date={doc[0].date} data={doc} />
                     )) : <div className="flex flex-col items-center justify-center">
                         <img src={fileLoad} alt=""/>
