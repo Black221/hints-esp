@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import login from "../assets/login.png";
 import cee from "../assets/Vector.png";
 import {FiAtSign} from "react-icons/fi";
@@ -7,22 +7,54 @@ import {Link, useNavigate} from "react-router-dom";
 import {useStateContext} from "../context/ContextProvider";
 import {FaRegUser} from "react-icons/fa";
 import {useAuthContext} from "../context/AuthProvider";
+import axios from "axios";
+import {HOST, PORT} from "../config/host";
 
 const Register = () => {
 
     let navigate = useNavigate();
-    const auth = useAuthContext()
+
+    const {
+        isLoading,
+        setIsLoading,
+        userInfo,
+        setUserInfo
+    } = useStateContext();
+
+    const auth = useAuthContext();
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [response, setResponse] = useState({})
 
     const handleRegister = (e) => {
+        setIsLoading(true)
         e.preventDefault();
-        auth.login("bouna");
-        navigate('/accueil');
+        axios.post(`http://${HOST}:${PORT}/api/user/register`, {
+            name,
+            email,
+            password
+        }).then(res => {
+            setIsLoading(false)
+            localStorage.setItem('access-key', JSON.stringify(res.data));
+            auth.login(res.data);
+        }).catch((error) => {
+            setIsLoading(false)
+            setResponse(error.response);
+        })
     }
 
     useEffect(() => {
         if (auth.user)
-            navigate('/accueil')
-    }, [auth.user])
+            if (userInfo) {
+                setIsLoading(false)
+                if (userInfo.department)
+                    navigate("/accueil")
+                else
+                    navigate("/redirection")
+            }
+    }, [userInfo])
 
     return (
         <div className="bg-cyan-400 bg-gradient-to-bl from-blue-500 md:from-white md:bg-white h-full md:h-screen md:grid md:grid-cols-2 ">
@@ -40,9 +72,12 @@ const Register = () => {
                 <img src={cee} alt="" className="md:w-auto w-44"/>
                 <div className="relative bottom-5">
                     <form action="" className="md:space-y-6 space-y-5 bg-white py-3 rounded-xl md:drop-shadow-none drop-shadow-xl px-2" onSubmit={handleRegister}>
+                        <div className="text-center text-red-500">{response.data}</div>
                         <div className=" flex justify-between items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
                             <div className="relative">
                                 <input type="text"
+                                       onChange={(e) => setName(e.target.value)}
+                                       value={name}
                                        id="pseudo"
                                        className="w-64 md:block p-2  md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
                                        placeholder=""/>
@@ -56,6 +91,8 @@ const Register = () => {
                             <div className="relative">
                                 <input type="email"
                                        id="email"
+                                       onChange={(e) => setEmail(e.target.value)}
+                                       value={email}
                                        className="w-64 md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
                                        placeholder=""/>
                                 <label htmlFor="email"
@@ -68,6 +105,8 @@ const Register = () => {
                             <div className="relative">
                                 <input type="password"
                                        id="password"
+                                       onChange={(e) => setPassword(e.target.value)}
+                                       value={password}
                                        className="w-64 md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
                                        placeholder=""/>
                                 <label htmlFor="password"

@@ -13,7 +13,8 @@ const Sidebar = () => {
         activeMenu,
         setActiveMenu,
         screenSize,
-        userInfo
+        userInfo,
+        setUserInfo
     } = useStateContext();
 
     const auth = useAuthContext();
@@ -36,7 +37,7 @@ const Sidebar = () => {
                     </div>
                     <div className="text-center flex-1">
                         <div>{userInfo.name}</div>
-                        <div>{userInfo?.formation?.abv} / {userInfo?.option?.abv}</div>
+                        <div>{userInfo?.formation?.abv +" "+ userInfo.year} / {userInfo?.option?.abv}</div>
                     </div>
                 </div>
                 <div className='mt-20'>
@@ -91,6 +92,7 @@ const Sidebar = () => {
                         <NavLink to='/connexion'
                                  onClick={() => {
                                      localStorage.clear();
+                                     setUserInfo(null)
                                      auth.logout(null);
                                  }}
                                  className=" mt-1 cursor-pointer absolute border text-green-500 bg-white p-3 rounded-full drop-shadow-xl">

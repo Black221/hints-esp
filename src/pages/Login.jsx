@@ -21,18 +21,19 @@ const Login = () => {
     const {
         isLoading,
         setIsLoading,
+        userInfo
     } = useStateContext();
 
     const auth = useAuthContext()
 
     const handleLogin = async (e) => {
-        setResponse({data : 'connexion en cours'})
         setIsLoading(true)
         e.preventDefault();
         axios.post(`http://${HOST}:${PORT}/api/user/login`, {
             email,
             password
         }).then(res => {
+            setIsLoading(false)
             localStorage.setItem('access-key', JSON.stringify(res.data));
             auth.login(res.data);
         }).catch((error) => {
@@ -43,12 +44,16 @@ const Login = () => {
 
     useEffect(() => {
 
-       if (auth.user) {
-           setIsLoading(false)
-           navigate("/accueil")
-       }
+        if (auth.user)
+            if (userInfo) {
+               setIsLoading(false)
+               if (userInfo.department)
+                   navigate("/accueil")
+               else
+                   navigate("/redirection")
+            }
 
-    }, [auth.user]);
+    }, [userInfo]);
 
 
 

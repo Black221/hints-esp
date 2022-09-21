@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {BrowserRouter, Routes, Route, useNavigate} from 'react-router-dom';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css';
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
@@ -13,6 +13,7 @@ import {useAuthContext} from "./context/AuthProvider";
 import {RequireAuth} from "./guard/AuthGard";
 import axios from "axios";
 import {HOST, PORT} from "./config/host";
+import Redirection from "./pages/Redirection";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
     const {
         screenSize,
         setScreenSize,
+        userInfo,
         setUserInfo
     } = useStateContext();
 
@@ -43,6 +45,7 @@ function App() {
     }
 
     useEffect(() => {
+        auth.logout();
         const handleResize = () => setScreenSize(window.innerWidth);
         window.addEventListener('resize', handleResize);
 
@@ -65,14 +68,14 @@ function App() {
         <div className="overflow-x-hidden">
             <BrowserRouter>
                 <div className='flex relative dark:bg-main-dark-bg'>
-                    { auth.user ? (
+                    { auth.user && userInfo && userInfo.department ? (
                         <div className='w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white'>
                             <Sidebar />
                         </div>
                     ) : (
                         <></>
                     )}
-                    <div className={ `dark:bg-main-bg bg-main-bg min-h-screen  w-full ${screenSize >= 900 && auth.user ? 'md:ml-72' : 'flex-2'}`} >
+                    <div className={ `dark:bg-main-bg bg-main-bg min-h-screen  w-full ${screenSize >= 900 && auth.user && userInfo && userInfo.department ? 'md:ml-72' : 'flex-2'}`} >
                         <Routes>
                             <Route path="/"
                                    exact
@@ -83,6 +86,9 @@ function App() {
                             />
                             <Route path="/connexion"
                                    element={<Login />}
+                            />
+                            <Route path="/redirection"
+                                   element={<Redirection />}
                             />
                             <Route path="/accueil"
                                    element={
