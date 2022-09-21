@@ -15,6 +15,8 @@ const Settings = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [response, setResponse] = useState("");
+    const [picture, setPicture] = useState();
+
 
     const {
         userInfo,
@@ -22,6 +24,31 @@ const Settings = () => {
     } = useStateContext();
 
     const auth = useAuthContext();
+
+    const handleUpdatePicture = (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('picture', picture);
+        formData.append('fileName', picture.name);
+
+        axios.put(
+            `http://${HOST}:${PORT}/api/user/update/picture/${userInfo._id}`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${auth.user.token}`,
+                    'content-type': 'multipart/form-data',
+                }
+            }
+        ).then(res => {
+            console.log(res.data)
+            setPicture(null)
+        }).catch((error) => {
+            console.log(error.response)
+            setResponse(error.response.data)
+            setPicture(null)
+        })
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -58,12 +85,27 @@ const Settings = () => {
             <div className="relative z-20">
                 <div className="md:w-auto w-80 p-5 md:px-10 space-y-10 border rounded-xl bg-white drop-shadow-xl relative z-20">
                     <div className="flex items-center space-x-4">
-                        <div className="mr-2 space-y-1">
-                            <div className="mx-auto bg-blue-500 p-4 rounded-full w-20 h-20 flex items-center justify-center">
-                                <FaUser color="#fff" size={28} />
-                            </div>
-                            <button className="p-3 py-2 bg-blue-200 rounded">Changer</button>
-                        </div>
+                        <form className="mr-2 space-y-1" onSubmit={handleUpdatePicture}>
+                            <label htmlFor="picture" className="cursor-pointer">
+                                { !userInfo.picture
+                                    ? <div
+                                        className="mx-auto bg-blue-500 p-4 rounded-full w-20 h-20 flex items-center justify-center">
+                                        <FaUser color="#fff" size={28}/>
+                                    </div>
+                                    :  <div className="mx-auto overflow-hidden  rounded-full w-20 h-20 flex items-center justify-center">
+                                        <img src={userInfo.picture}
+                                             className="h-20"
+                                             alt="alt"/>
+                                    </div>
+                                }
+                            </label>
+                            <input type="file"
+                                   id="picture"
+                                   onChange={(e) => setPicture(e.target.files[0])}
+                                   className="hidden"/>
+                            <small className="block">{picture && picture.name}</small>
+                            <input type="submit" disabled={!picture} value="Changer" className="cursor-pointer p-3 py-2 bg-blue-200 rounded" />
+                        </form>
                         <div className="space-y-1">
                             <div className="font-bold text-2xl">{userInfo.name}</div>
                             <div className="text-gray-800 text-xl">{userInfo.formation.abv +" "+ userInfo.year} / {userInfo.option.abv}</div>

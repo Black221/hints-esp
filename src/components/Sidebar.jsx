@@ -32,9 +32,16 @@ const Sidebar = () => {
         return (
             <div className='ml-3 h-screen md:overflow-hidden overflow-auto md:hover:overflow-auto pb-10'>
                 <div className='mt-10 bg-white border drop-shadow-xl p-3 flex justify-between items-center mx-5 px-5 rounded-[15px]'>
-                    <div className="bg-blue-500 p-4 rounded-full">
-                        <FaUser color="#fff" size={24} />
-                    </div>
+                    {  !userInfo.picture
+                        ? <div className="bg-blue-500 p-4 rounded-full">
+                            <FaUser color="#fff" size={24}/>
+                        </div>
+                        : <div className="mx-auto overflow-hidden  rounded-full w-20 h-20 flex items-center justify-center">
+                            <img src={userInfo.picture}
+                                 className="h-20"
+                                 alt="alt"/>
+                        </div>
+                    }
                     <div className="text-center flex-1">
                         <div>{userInfo.name}</div>
                         <div>{userInfo?.formation?.abv +" "+ userInfo.year} / {userInfo?.option?.abv}</div>

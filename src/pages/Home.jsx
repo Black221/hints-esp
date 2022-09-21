@@ -70,7 +70,7 @@ const Home = () => {
     }, [userInfo])
 
     useEffect(() => {
-       if (matieres)
+       if (matieres && matieres[0])
            fetchMatiere(matieres[0]._id)
     }, [matieres]);
 
