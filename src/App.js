@@ -14,6 +14,9 @@ import {RequireAuth} from "./guard/AuthGard";
 import axios from "axios";
 import {HOST, PORT} from "./config/host";
 import Redirection from "./pages/Redirection";
+import QuestionForm from "./pages/QuestionForm";
+import SpecificQuestion from "./pages/SpecificQuestion";
+import ForumHead from "./components/ForumHead";
 
 
 function App() {
@@ -104,20 +107,29 @@ function App() {
                                        </RequireAuth>
                                    }
                             />
-                            <Route path="/aide"
+
+                            <Route path="/forum/question"
+                                   element={
+                                       <RequireAuth>
+                                           <QuestionForm/>
+                                       </RequireAuth>
+                                   }
+                            />
+                            <Route path="/forum/*"
                                    element={
                                        <RequireAuth>
                                            <Forum/>
                                        </RequireAuth>
                                    }
                             />
-                            <Route path="/dashboard"
-                                   element={
-                                       <RequireAuth>
-                                           <Dashboard/>
-                                       </RequireAuth>
-                                   }
-                            />
+
+                            {/*<Route path="/dashboard"*/}
+                            {/*       element={*/}
+                            {/*           <RequireAuth>*/}
+                            {/*               <Dashboard/>*/}
+                            {/*           </RequireAuth>*/}
+                            {/*       }*/}
+                            {/*/>*/}
 
                         </Routes>
                     </div>

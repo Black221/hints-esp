@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavLink, Navigate} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 import { links } from '../data/dummy';
 import { useStateContext } from '../context/ContextProvider';

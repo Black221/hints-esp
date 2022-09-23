@@ -7,6 +7,10 @@
 .navbar {
     z-index: 10000;
 }
+.forum-head {
+    width: calc(100% -  320px);
+    z-index: 1000;
+}
 @media  screen and (max-width:800px) {
     .sidebar{
         z-index: 10000000;

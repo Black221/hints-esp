@@ -16,7 +16,7 @@ export const links = [
         icon: <RiSettings5Fill size={30} />
     },
     {
-        name: 'aide',
+        name: 'forum',
         icon: <IoMdHelpCircle size={30} />,
     },
 ];
