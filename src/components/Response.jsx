@@ -1,30 +1,84 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {FaUser} from "react-icons/fa";
-import {BsStarFill} from "react-icons/bs";
+import {BsStar, BsStarFill} from "react-icons/bs";
+import axios from "axios";
+import { HOST, PORT} from "../config/host";
+import {useAuthContext} from "../context/AuthProvider";
+import { collection, updateDoc, doc } from "firebase/firestore";
+import {fireDB} from '../data/firebase';
+import Moment from 'moment';
 
-const Response = () => {
+
+const Response = ({response}) => {
+
+    const [user, setUser] = useState({});
+    const auth = useAuthContext();
+    const currentDate = Moment().format('DD-MM-YYYY');
+
+    const handleLike = async () => {
+        let like = response.like ? response.like : [];
+        like.push(user._id);
+        await updateDoc(doc(collection(fireDB, "Responses"), response.id), {like})
+            .then((res) => {
+            })
+    }
+
+   
+
+    const fetchUser = () => {
+        axios.get(
+            `http://${HOST}:${PORT}/api/user/get/${response.user}`,
+            {
+                headers: {
+                    Authorization : `Bearer ${auth.user.token}`
+                }
+            }
+        ).then(res => {
+            setUser(res.data.user);
+        }).catch((error) => {
+        })
+    }
+
+    useEffect(() => {
+        if (response)
+            fetchUser();
+    }, [response]);
+
+
+    
 
     return (
-        <div className="my-8">
+        user && <div className="my-8">
             <div className="flex justify-between">
                 <div className="text-center flex space-x-4 items-center ">
-                    <div className="mb-2 bg-blue-500 p-4 w-12 h-12 rounded-full flex items-center justify-center">
-                        <FaUser color="#fff" size={24}/>
-                    </div>
+                    { user && !user.picture
+                        ? <div className="mx-auto bg-blue-500 p-4 rounded-full h-16 w-16 flex items-center justify-center">
+                            <FaUser color="#fff" size={28}/>
+                        </div>
+                        :  <div className="mx-auto overflow-hidden  rounded-full w-16 h-16 flex items-center justify-center">
+                            <img src={user.picture}
+                                 className="h-20"
+                                 alt="alt"/>
+                        </div>
+                    }
                     <div>
-                        <div className="font-bold ">John Doe</div>
-                        <div className="text-sm">Dut 2 / Ba</div>
+                        <div className="font-bold "> {user && user.name} </div>
+                        <div className="text-sm">{user.formation +" "+ user.level} / {user.option}</div>
                     </div>
                 </div>
                 <div className="flex space-x-3">
-                    <BsStarFill size={20} className="text-yellow-400" />
-                    <span>65 votes</span>
+                    {response && response.like &&
+                        response.like.filter((id) => (id === user._id))[0]
+                            ? <BsStarFill size={20} className="text-yellow-400" />
+                            : <BsStar size={20} onClick={handleLike} className="cursor-pointer text-yellow-400" />
+
+                    }
+                    <span>{response && response.like && response.like.length} votes</span>
                 </div>
             </div>
-            <div className="">
-                <p className="text-justify tracking-widest line-clamp-3">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur deserunt dolor dolorem dolorum, modi porro quaerat quos. Aliquam blanditiis consequuntur corporis id minus molestias quas quibusdam quo repudiandae! Mollitia, quas.
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur deserunt dolor dolorem dolorum, modi porro quaerat quos. Aliquam blanditiis consequuntur corporis id minus molestias quas quibusdam quo repudiandae! Mollitia, quas.
+            <div className="mt-2">
+                <p className="text-justify text-sm tracking-widest line-clamp-3">
+                    {response && response.description}
                 </p>
             </div>
             <div className="text-end">
@@ -32,6 +86,11 @@ const Response = () => {
                     afficher plus
                 </button>
             </div>
+            <small className="text-gray-700 ">{
+                response && currentDate !== Moment(response.createAt.seconds * 1000).format('DD-MM-YYYY')
+                    ? Moment(response.createAt.seconds * 1000).format('DD-MM-YYYY')
+                    : "il y'a "+ Moment().subtract(Moment(response.createAt.seconds * 1000)).format('HH:mm')+" mn"
+            }</small>
             <hr className="border-gray-300 my-6"/>
         </div>
     )

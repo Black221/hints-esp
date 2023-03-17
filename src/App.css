@@ -12,6 +12,9 @@
     z-index: 1000;
 }
 @media  screen and (max-width:800px) {
+    .forum-head {
+        width: calc(100%);
+    }
     .sidebar{
         z-index: 10000000;
     }

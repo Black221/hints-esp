@@ -43,8 +43,8 @@ const Sidebar = () => {
                         </div>
                     }
                     <div className="text-center flex-1">
-                        <div>{userInfo.name}</div>
-                        <div>{userInfo?.formation?.abv +" "+ userInfo.year} / {userInfo?.option?.abv}</div>
+                        <div>{userInfo.pseudo}</div>
+                        <div>{userInfo?.formation +" "+ userInfo.level} / {userInfo?.option}</div>
                     </div>
                 </div>
                 <div className='mt-20'>

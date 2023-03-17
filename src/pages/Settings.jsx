@@ -103,12 +103,12 @@ const Settings = () => {
                                    id="picture"
                                    onChange={(e) => setPicture(e.target.files[0])}
                                    className="hidden"/>
-                            <small className="block">{picture && picture.name}</small>
+                            <small className="block">{picture && picture.pseudo}</small>
                             <input type="submit" disabled={!picture} value="Changer" className="cursor-pointer p-3 py-2 bg-blue-200 rounded" />
                         </form>
                         <div className="space-y-1">
-                            <div className="font-bold text-2xl">{userInfo.name}</div>
-                            <div className="text-gray-800 text-xl">{userInfo.formation.abv +" "+ userInfo.year} / {userInfo.option.abv}</div>
+                            <div className="font-bold text-2xl">{userInfo.pseudo}</div>
+                            <div className="text-gray-800 text-xl">{userInfo.formation +" "+ userInfo.level} / {userInfo.option}</div>
                             <div className="text-gray-700">{userInfo.email}</div>
                         </div>
                     </div>

@@ -14,51 +14,39 @@ const Home = () => {
 
     const {
         userInfo,
-        semester,
     } = useStateContext();
 
-    const [matieres, setMatieres] = useState(null);
-    const [matiereToRender, setMatiereToRender] = useState(null);
+    const [courses, setCourses] = useState(null);
+    const [courseToRender, setCourseToRender] = useState(null);
     const [documents, setDocuments] = useState(null)
 
     const auth = useAuthContext();
 
 
-    const fetchMatieres = () => {
+    const fetchCourses = () => {
         axios.get(
-            `http://${HOST}:${PORT}/api/department/get/${userInfo.department}`,
+            `http://${HOST}:${PORT}/api/course/get/user/${userInfo._id}`,
             {
                 headers: {
                     Authorization : `Bearer ${auth.user.token}`
                 }
             }
         ).then(res => {
-            const department = res.data.department;
-            const formation = department.formations_options.filter((item) => (
-                item.formation._id === userInfo.formation._id
-                && item.option._id === userInfo.option._id
-            ))[0];
-            const year =  formation.years.filter((year) => (
-                year.number === userInfo.year
-            ))[0];
-            setMatieres(year.semesters.filter((item) => (
-                item.number === semester
-            ))[0].matieres);
+            setCourses(res.data.courses);
         }).catch((error) => {
-            console.log(error)
         })
     }
 
-    const fetchMatiere = (id) => {
+    const fetchCourse = (id) => {
         axios.get(
-            `http://${HOST}:4200/api/department/matiere/get/${id}`,
+            `http://${HOST}:4200/api/department/course/get/${id}`,
             {
                 headers: {
                     Authorization : `Bearer ${auth.user.token}`
                 }
             }
         ).then(res => {
-            setMatiereToRender(res.data.matiere)
+            setCourseToRender(res.data.course)
         }).catch((error) => {
             console.log(error)
         })
@@ -66,19 +54,19 @@ const Home = () => {
 
     useEffect(() => {
         if (userInfo)
-            fetchMatieres()
+            fetchCourses()
     }, [userInfo])
 
     useEffect(() => {
-       if (matieres && matieres[0])
-           fetchMatiere(matieres[0]._id)
-    }, [matieres]);
+       if (courses && courses[0])
+           fetchCourse(courses[0]._id)
+    }, [courses]);
 
 
     useEffect(() => {
 
-        if (matiereToRender) {
-            let tmp = matiereToRender.files.reduce((r, o) => {
+        if (courseToRender) {
+            let tmp = courseToRender.files.reduce((r, o) => {
                     r[o.date.split('/')[2]] = r[o.date.split('/')[2]] || []
                     r[o.date.split('/')[2]].push(o)
                     return r;
@@ -97,7 +85,7 @@ const Home = () => {
             })
             setDocuments(result);
         }
-    }, [matiereToRender]);
+    }, [courseToRender]);
 
     useEffect(() => {
         if (documents)
@@ -114,16 +102,18 @@ const Home = () => {
             </div>
             <div className="text-start w-full md:px-10">
                 <h1 className="text-2xl font-bold text-gray-700 ml-4">Matières</h1>
-                <div className="overflow-x-scroll border flex p-3 rounded-xl my-4 bg-blue-200 md:bg-blue-100 drop-shadow-md">
-                    { matieres && matieres.map((matiere) => (
-                        <div onClick={() => fetchMatiere(matiere._id)}
-                             key={matiere._id}
-                             className="cursor-pointer p-4 py-1 rounded-xl border bg-white mr-3 drop-shadow-md flex items-center">
-                            {icons[`${matiere.icon}`]} <span className="ml-4 text-sm "> {matiere.name}</span>
+                <div className="overflow-x-auto border flex p-3 rounded-xl my-4 bg-blue-200 md:bg-blue-100 drop-shadow-md">
+                    {  courses && courses[0] ? courses.map((course) => (
+                        <div onClick={() => fetchCourse(course._id)}
+                             key={course._id}
+                             className="min-w-fit cursor-pointer p-4 py-1 rounded-xl border bg-white mr-3 drop-shadow-md flex items-center">
+                            {icons[`${course.icon}`]} <span className="ml-4 text-sm "> {course.name}</span>
                         </div>
-                    ))}
+                    )) : <p className="text-center w-full">
+                        Matiere indisponible
+                    </p>}
                 </div>
-                <h1 className="text-2xl text-center font-bold text-blue-500">{matiereToRender && matiereToRender.name}</h1>
+                <h1 className="text-2xl text-center font-bold text-blue-500">{courseToRender && courseToRender.name}</h1>
                 <div className="mt-7">
                     {documents && documents[0] ? documents.map((doc, index) => (
                         <Document key={index} date={doc[0].date} data={doc} />

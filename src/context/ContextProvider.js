@@ -4,11 +4,13 @@ const StateContext = createContext(undefined);
 
 
 export const ContextProvider = ({ children}) => {
+
     const [activeMenu, setActiveMenu] = useState(false);
     const [screenSize, setScreenSize] = useState(undefined);
     const [isLoading, setIsLoading] = useState(false)
     const [userInfo, setUserInfo] = useState(false)
     const [semester, setSemester] = useState(1);
+    const [search, setSearch] = useState("");
 
     return (
         <StateContext.Provider value={{
@@ -17,6 +19,7 @@ export const ContextProvider = ({ children}) => {
             isLoading, setIsLoading,
             userInfo, setUserInfo,
             semester, setSemester,
+            search, setSearch
         }}>
             {children}
         </StateContext.Provider>

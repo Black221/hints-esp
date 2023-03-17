@@ -16,8 +16,5 @@ export const RequireAuth = ({children}) => {
      if ( !auth.user && !access)
         return <Navigate to='/connexion' />
 
-     if (!userInfo.department)
-         return <Navigate to='/redirection' />
-
     return children
 }

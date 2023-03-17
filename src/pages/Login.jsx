@@ -3,7 +3,7 @@ import login from "../assets/login.png";
 import loginGif from "../assets/login.gif";
 import cee from "../assets/Vector.png";
 import {FiAtSign} from "react-icons/fi";
-import {RiLock2Line} from "react-icons/ri";
+import {RiLock2Line, RiLockUnlockLine} from "react-icons/ri";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useAuthContext} from "../context/AuthProvider";
@@ -16,8 +16,8 @@ const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [response, setResponse] = useState({})
-
+    const [response, setResponse] = useState("")
+    const [unlock, setUnlock] = useState(false);
     const {
         isLoading,
         setIsLoading,
@@ -28,17 +28,20 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         setIsLoading(true)
+        console.log(email)
         e.preventDefault();
         axios.post(`http://${HOST}:${PORT}/api/user/login`, {
             email,
             password
         }).then(res => {
             setIsLoading(false)
+            console.log(res)
             localStorage.setItem('access-key', JSON.stringify(res.data));
             auth.login(res.data);
         }).catch((error) => {
             setIsLoading(false)
-            setResponse(error.response);
+            console.log(error)
+            setResponse(error.response.data);
         })
     }
 
@@ -47,10 +50,7 @@ const Login = () => {
         if (auth.user)
             if (userInfo) {
                setIsLoading(false)
-               if (userInfo.department)
-                   navigate("/accueil")
-               else
-                   navigate("/redirection")
+               navigate("/accueil")
             }
 
     }, [userInfo]);
@@ -69,15 +69,19 @@ const Login = () => {
                     Quelque soit votre formation
                 </div>
             </div>
+
+
+
+
             <div className="md:relative flex flex-col items-center justify-center" >
                 <img src={cee} alt="" className="md:w-auto w-44"/>
                 <div className="relative bottom-5">
                     <form className=" bg-white py-3 rounded-xl md:drop-shadow-none drop-shadow-xl"
                           onSubmit={handleLogin}>
-                        <div className="text-center text-red-500">{response.data}</div>
+                        <div className="text-center text-red-500">{response}</div>
                         <div className=" flex  items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
                             <div className="relative flex-1">
-                                <input type="email"
+                                <input type="text"
                                        id="email"
                                        className="w-full md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
                                        placeholder=""
@@ -92,7 +96,7 @@ const Login = () => {
                         </div>
                         <div className="mt-4 relative flex  items-center border border-blue-300 rounded-2xl m-2 px-3 drop-shadow-md bg-white">
                             <div className="relative flex-1">
-                                <input type="password"
+                                <input type={unlock ? "text": "password"}
                                        id="password"
                                        className="w-full md:block p-2 md:w-80 peer appearance-none bg-transparent focus:outline focus:outline-0 "
                                        placeholder=""
@@ -103,7 +107,11 @@ const Login = () => {
                                        className="absolute text-md text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-6 left-1">
                                     Mot de passe</label>
                             </div>
-                            <RiLock2Line size={24} className="text-gray-700" />
+                            <button type="button" onClick={() => setUnlock(u => (!u))}>
+                                {!unlock 
+                                ? <RiLock2Line size={24} className="text-gray-700" />
+                                : <RiLockUnlockLine size={24} className="text-gray-700" />}
+                            </button>
                         </div>
                         <div className="flex justify-between px-3 text-[14px] md:text-[16px] space-x-10 md:space-x-0">
                             <div className="space-x-1 md:space-x-3 text-green-500 flex items-center">

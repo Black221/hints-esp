@@ -1,8 +1,5 @@
 import React from "react";
 import { Route, Routes} from 'react-router-dom';
-// import aidePng from "../assets/aide.png";
-// import blob1 from "../assets/Vectordhtr.png";
-// import blob2 from "../assets/blob2.png";
 import ForumHead from "../components/ForumHead";
 import QuestionPage from "./QuestionPage";
 import SpecificQuestion from "./SpecificQuestion";
